@@ -6,9 +6,18 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Socket.IO Chat App</title>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div id="chat">
+      <header>
+        <h1>Welcome to ChatApp</h1>
+        <div id="username">
+          <label for="name">Enter your name:</label>
+          <input type="text" id="name" />
+          <button id="joinButton">Join</button>
+        </div>
+      </header>
       <ul id="messages"></ul>
       <form id="form" action="#">
         <input id="input" autocomplete="off" /><button>Send</button>
@@ -20,10 +29,23 @@
     <script>
       $(document).ready(() => {
         const socket = io();
+        let username = "";
+
+        $("#joinButton").click(() => {
+          const name = $("#name").val().trim();
+          if (name !== "") {
+            username = name;
+            $("#username").hide();
+            $("header h1").text(`Welcome to ChatApp, ${username}!`);
+          }
+        });
 
         $("#form").submit(() => {
-          socket.emit("message", $("#input").val());
-          $("#input").val("");
+          const message = $("#input").val();
+          if (message.trim() !== "") {
+            socket.emit("message", `${username}: ${message}`);
+            $("#input").val("");
+          }
           return false;
         });
 
